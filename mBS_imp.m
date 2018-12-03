@@ -11,8 +11,8 @@ function [W] = mBS_imp(Ix, It, M, N, bs)
 % bs.bcL ... (function_handle) condicion iquierda
 % bs.bcR ... (function_handle) condicion derecha
 % Out: W ... (M+1)x(N+1) matriz con la aproximacion numerica
-A = -((bs.r - (bs.sigma)^2) / 2 )/ log(2);
-B = - ((bs.sigma)^2 / 2)/ (log(2)^2);
+A = -(bs.r - ((bs.sigma)^2 )/ 2 )/ log(2);
+B = - (((bs.sigma)^2) / 2)/ (log(2)^2);
 
 h = (Ix(2) - Ix(1))/M;
 k = (It(2) - It(1))/N;
@@ -42,13 +42,31 @@ end
 aux = zeros(M,1);
 f_n = zeros(M,1);
 %f_n(1,1) = theta*bs.bcL(It(1)+k);
+D = inv(D);
 for i=2:N+1
     f_n(1,1) = theta*bs.bcL(It(1)+(i-1)*k);
-    aux(1:M-1,1) = W(1:M-1,i-1);
+    aux(1:M-1,1) = W(2:M,i-1);
     aux(M,1) = bs.bcR(It(1)+(i-1)*k);
-    W(2:M+1,i) = (aux-f_n)\D;
+    %W(2:M+1,i) = (aux-f_n)\D;
+    W(2:M+1,i) = D * (aux-f_n);
+   %verifi = norm( D*W(2:M+1,i) -(aux-f_n))
     W(1,i) = bs.bcL((i-1)*k);
     
     
 end 
+
+
+%{
+ for m =2:M
+    for n = 2:N+1
+       Err(m-1,n) =  W(m,n-1)-theta*W(m-1,n)-gamm*W(m,n)-phi*W(m+1,n);
+    end
+end
+unos = ones(1,M-1);
+for n = 1:N+1
+   [val]  = min(abs(Err(:,n)))
+   prom = unos*Err(:,n)/M-1
+end 
+%}
+
 
