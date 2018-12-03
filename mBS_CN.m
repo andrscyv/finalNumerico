@@ -37,6 +37,6 @@ for i = 2:N+1
     D = AGrande*W(2:M+1,i);
     D(M,1) = bs.bcR(It(1)+(i-1)*k);
     W(2:M+1,i) = BGrande*(D+f_n);
-    W(1,i) = bs.bcL((i-1)*k);
+    W(1,i) = bs.bcL(It(1)+(i-1)*k);
 end
 
