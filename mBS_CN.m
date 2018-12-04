@@ -2,9 +2,8 @@ function [ W ] = mBS_CN ( Ix, It, M, N, bs )
 %UNTITLED Summary of this function goes here
 %   Detailed explanation goes here
 
-A = bs.r;
-B = -(bs.r - bs.sigma^2)/(2*log(2));
-C = -(bs.sigma^2/2)/(log(2)^2);
+A = -(bs.r - ((bs.sigma)^2 )/ 2 )/ log(2);
+B = - (((bs.sigma)^2) / 2)/ (log(2)^2);
 
 h = (Ix(2) - Ix(1))/M;
 k = (It(2) - It(1))/N;
@@ -34,7 +33,7 @@ D = zeros(M,1);
 BGrande = inv(BGrande);
 for i = 2:N+1
     f_n(1,1) = -theta*(bs.bcL(It(1)+k*(i-2)) - bs.bcL(It(1)+k*(i-1)));
-    D = AGrande*W(2:M+1,i);
+    D = AGrande*W(2:M+1,i-1);
     D(M,1) = bs.bcR(It(1)+(i-1)*k);
     W(2:M+1,i) = BGrande*(D+f_n);
     W(1,i) = bs.bcL(It(1)+(i-1)*k);
