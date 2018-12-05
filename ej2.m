@@ -17,6 +17,7 @@ W = mBS_imp(Ix, It, M, N, bs);
 gridSpace = linspace(Ix(1), Ix(2), M + 1);
 gridTime  = linspace(It(1), It(2), N + 1);
 gridPrice = 2.^gridSpace;
+
 mesh(gridPrice, gridTime, W', 'LineWidth', 1.5);
 
 %%
@@ -41,18 +42,19 @@ end
 %Inciso b)
 %Utilizando Crank-Nicolson graficamos las soluciones analiticas y numericas
 
-Crank =  mBS_CN(Ix, It, M(1/10), N(1/10), bs);
+Crank =  mBS_CN(Ix, It, M(1/100), N(1/10), bs);
 tFin = N(1/10)+1;
-gridSpace = linspace(Ix(1), Ix(2), M(1/10) + 1);
+gridSpace = linspace(Ix(1), Ix(2), M(1/100) + 1);
 gridPrice = 2.^gridSpace;
 solExact = Vex(gridPrice);
 
 %Grafica de s contra V numerica y analitica
 close all;
-plot(gridSpace,solExact)
+%plot(gridPrice,solExact)
 hold on
-plot(gridSpace,Crank(:,N(1/10)+1))
-plot(gridSpace,Crank(:,1))
+%plot(gridPrice,Crank(:,N(1/10)+1))
+%plot(gridPrice,Crank(:,1))
+%pause();
 
 %Grafica de Vs contra s numerica y analitica
 dn = @(z) 1/sqrt(2*pi)*exp((-z.^2)/2);
@@ -61,58 +63,45 @@ Vs = @(s) phi((log(s)+0.14)/sqrt(0.08))+dn((log(s)+0.14)/sqrt(0.08))/sqrt(0.08)-
 %Wx_anal = @(x) Vs(2.^x).*2.^x*log(2);
 %Calculamos Wx num�rica
 Wx_num(1) = 0;
-for i = 2:M(1/10)
+for i = 2:M(1/100)
    Wx_num(i) = (Crank(i+1,tFin)-Crank(i-1,tFin))*5;
 end
 
-for i = 2:M(1/10)
+solExact = Vex(linspace(0,4,M(1/100)+1));
+for i = 2:M(1/100)
    Vs_anal(i) = (solExact(i+1)-solExact(i-1))*5;
 end
 
 Vs_anal(1)=0;
-Vs_anal(M(1/10)+1) = 2.8;
+Vs_anal(M(1/100)+1) = 1;
 
-Wx_num(M(1/10)+1) = 2.8;
+Wx_num(M(1/100)+1) = 2.8;
 Vs_num = @(Wx,x) Wx./(2.^(x)*log(2));
 Vs_res = Vs_num(Wx_num,gridSpace);
 close all;
 title('Vs vs S')
 plot(gridPrice,Vs_res)
 hold on
-plot(gridPrice,Vs_anal)
-pause();
+plot(linspace(0,4,M(1/100)+1),Vs_anal)
 
-%pause();
-%close all;
-%plot(gridSpace,Wx_anal(gridSpace));
-hold on
-%plot(gridSpace,Wx_num);
-
-%Grafica Wxx contra x numerica y analitica
-dn_p = @(z) dn(z).*(-z);
-Vss = @(s) dn_p((log(s)+0.14)/sqrt(0.08))./(0.08*s)+dn((log(s)+0.14)/sqrt(0.08))./(sqrt(0.08)*s)-dn_p((log(s)+0.06)/sqrt(0.08))*exp(-0.1)./(s.^2*0.08)+dn_p((log(s)+0.06)/sqrt(0.08))*exp(-0.1)./(s.^2*sqrt(0.08)); 
-
-
-
-%dn( (log(s)+0.14)/sqrt(0.08))./(s*sqrt(0.08)) + dn_p((log(s)+0.14)/sqrt(0.08))./(s*0.08)-exp(-0.1)*dn_p((log(s)+0.06)/sqrt(0.08))./(s*0.08);
-Wxx_anal = @(x) Vss(2.^x).*(2.^x*log(2)).^2+2.^x*log(2)^2.*Vs(2.^x);
-close all;
-plot(gridSpace, Wxx_anal(gridSpace));
-%pause();
-bander = 0
-%Prueba Vs y Vss
-close all;
-p = linspace(1,2,200);
-%plot(p,Vs(p))
-hold on
-%plot(p,Vss(p),'o')
-%Vss(p);
-%pause();
-%Wxx numerico
+%Vxx analitica y numerica
 Wxx_num(1) = 0;
-for i = 2:M(1/10)
-    Wxx_num(i) = (Crank(i-1,tFin)-2*Crank(i,tFin)+Crank(i+1,tFin))*100;
+for i = 2:M(1/100)
+   Wxx_num(i) = (Wx_num(i+1)-Wx_num(i-1))*5;
 end
-Wxx_num(M(1/10)+1) = 2.8;
-close all
-plot(gridSpace,Wxx_num);
+
+for i = 2:M(1/100)
+   Vss_anal(i) = (Vs_anal(i+1)-Vs_anal(i-1))*5;
+end
+
+Wxx_num(M(1/100)+1) = 2.8;
+Vss_anal(1)=0;
+Vss_anal(M(1/100)+1) = 0;
+Vss_num = @(Wx,Wxx,x) Wxx*(1/(2^x*log(2)))^2 + Wx*(-1/((2^x)^2*log(2)));
+for j=1:M(1/100)+1
+   Vss_res(j) = Vss_num(Wx_num(j),Wxx_num(j),gridSpace(j));
+end
+%close all;
+plot(gridPrice,Vss_res)
+hold on
+plot(linspace(0,4,M(1/100)+1),Vss_anal)
