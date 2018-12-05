@@ -19,7 +19,7 @@ gridTime  = linspace(It(1), It(2), N + 1);
 gridPrice = 2.^gridSpace;
 
 mesh(gridPrice, gridTime, W', 'LineWidth', 1.5);
-
+pause();
 %%
 %Solucion exacta en el tiempo 0
 %phi = @(x) cdf('Normal',x,0,1);
@@ -50,20 +50,15 @@ solExact = Vex(gridPrice);
 
 %Grafica de s contra V numerica y analitica
 close all;
-%plot(gridPrice,solExact)
+plot(gridPrice,solExact)
 hold on
-%plot(gridPrice,Crank(:,N(1/10)+1))
-%plot(gridPrice,Crank(:,1))
-%pause();
+plot(gridPrice,Crank(:,N(1/10)+1))
+plot(gridPrice,Crank(:,1))
+pause();
 
 %Grafica de Vs contra s numerica y analitica
 dn = @(z) 1/sqrt(2*pi)*exp((-z.^2)/2);
 Vs = @(s) phi((log(s)+0.14)/sqrt(0.08))+dn((log(s)+0.14)/sqrt(0.08))/sqrt(0.08)-exp(-0.1)*dn((log(s)+0.06)/sqrt(0.08))/(s*sqrt(0.08));
-%VS numérica
-%Wx_anal = @(x) Vs(2.^x).*2.^x*log(2);
-%Calculamos Wx num�rica
-%Wx_num(1) = 0;
-%Wx_num(M(1/100)+1) = 2.8;
 
 Wx_num(1) = (-3*Crank(1,tFin)+4*Crank(2,tFin)-Crank(3,tFin))*50
 Wx_num(M(1/100)+1) = (-Crank(M(1/100)-1,tFin)+4*Crank(M(1/100),tFin)-3*Crank(M(1/100)+1,tFin))*-50;
@@ -79,7 +74,7 @@ end
 
 %Vs_anal(1)=0;
 %Vs_anal(M(1/100)+1) = 1;
-Vs_anal(1) = (-3*solExact(1)+4*solExact(2)-solExact(2))*50
+Vs_anal(1) = (-3*solExact(1)+4*solExact(2)-solExact(2))*50;
 Vs_anal(M(1/100)+1) = (-solExact(M(1/100)-1)+4*solExact(M(1/100))-3*solExact(M(1/100)+1))*-50;
 
 
@@ -90,6 +85,7 @@ title('Vs vs S')
 plot(gridPrice,Vs_res)
 hold on
 plot(linspace(0,4,M(1/100)+1),Vs_anal)
+pause();
 
 %Vxx analitica y numerica
 Wxx_num(1) = 0;
@@ -108,7 +104,7 @@ Vss_num = @(Wx,Wxx,x) Wxx*(1/(2^x*log(2)))^2 + Wx*(-1/((2^x)^2*log(2)));
 for j=1:M(1/100)+1
    Vss_res(j) = Vss_num(Wx_num(j),Wxx_num(j),gridSpace(j));
 end
-%close all;
+close all;
 plot(gridPrice,Vss_res)
 hold on
 plot(linspace(0,4,M(1/100)+1),Vss_anal)
