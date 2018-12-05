@@ -42,14 +42,14 @@ end
 aux = zeros(M,1);
 f_n = zeros(M,1);
 %f_n(1,1) = theta*bs.bcL(It(1)+k);
-D = inv(D);
+%D = inv(D);
 for i=2:N+1
     f_n(1,1) = theta*bs.bcL(It(1)+(i-1)*k);
     aux(1:M-1,1) = W(2:M,i-1);
     aux(M,1) = bs.bcR(It(1)+(i-1)*k);
-    %W(2:M+1,i) = (aux-f_n)\D;
-    W(2:M+1,i) = D * (aux-f_n);
-   %verifi = norm( D*W(2:M+1,i) -(aux-f_n))
+    W(2:M+1,i) = D\(aux-f_n);
+    %W(2:M+1,i) = D * (aux-f_n);
+   verifi = norm( D*W(2:M+1,i) -(aux-f_n))
     W(1,i) = bs.bcL(It(1)+(i-1)*k);
     
     

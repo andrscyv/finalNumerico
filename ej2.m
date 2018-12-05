@@ -21,7 +21,8 @@ mesh(gridPrice, gridTime, W', 'LineWidth', 1.5);
 
 
 %Solucion exacta en el tiempo 0
-phi = @(x) cdf('Normal',x,0,1);
+%phi = @(x) cdf('Normal',x,0,1);
+phi = @(x) normcdf(x);
 Vex = @(S) S.*phi((log(S)+0.14)/sqrt(0.08)) - exp(-0.1)*phi((log(S)+0.06)/sqrt(0.08));
 
 M = @(h) 4/h;
@@ -36,7 +37,7 @@ for i = 1:3
    tamPaso = pasos(i)
    errorMax = max(abs(Imp(:,N(pasos(i))+1)-solExact'))
 end
-
+pause();
 %Inciso b)
 %Utilizando Crank-Nicolson graficamos las soluciones analiticas y numericas
 
@@ -58,7 +59,7 @@ dn = @(z) 1/sqrt(2*pi)*exp((-z.^2)/2);
 Vs = @(s) phi((log(s)+0.14)/sqrt(0.08))+dn((log(s)+0.14)/sqrt(0.08))/sqrt(0.08)-exp(-0.1)*dn((log(s)+0.06)/sqrt(0.08))/(s*sqrt(0.08));
 %Wx analitica
 Wx_anal = @(x) Vs(2.^x).*2.^x*log(2);
-%Calculamos Wx numérica
+%Calculamos Wx numï¿½rica
 Wx_num(1) = 0;
 for i = 2:M(1/10)
     Wx_num(i) = (Crank(i+1,tFin)-Crank(i-1,tFin))*5;
@@ -80,7 +81,7 @@ Vss = @(s) dn_p((log(s)+0.14)/sqrt(0.08))./(0.08*s)+dn((log(s)+0.14)/sqrt(0.08))
 Wxx_anal = @(x) Vss(2.^x).*(2.^x*log(2)).^2+2.^x*log(2)^2.*Vs(2.^x);
 close all;
 plot(gridSpace, Wxx_anal(gridSpace));
-pause();
+%pause();
 bander = 0
 %Prueba Vs y Vss
 close all;
