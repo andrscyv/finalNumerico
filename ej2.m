@@ -19,7 +19,7 @@ gridTime  = linspace(It(1), It(2), N + 1);
 gridPrice = 2.^gridSpace;
 mesh(gridPrice, gridTime, W', 'LineWidth', 1.5);
 
-
+%%
 %Solucion exacta en el tiempo 0
 %phi = @(x) cdf('Normal',x,0,1);
 phi = @(x) normcdf(x);
@@ -37,7 +37,7 @@ for i = 1:3
    tamPaso = pasos(i)
    errorMax = max(abs(Imp(:,N(pasos(i))+1)-solExact'))
 end
-pause();
+%pause();
 %Inciso b)
 %Utilizando Crank-Nicolson graficamos las soluciones analiticas y numericas
 
@@ -54,20 +54,37 @@ hold on
 plot(gridSpace,Crank(:,N(1/10)+1))
 plot(gridSpace,Crank(:,1))
 
-%Grafica de Wx contra x numerica y analitica
+%Grafica de Vs contra s numerica y analitica
 dn = @(z) 1/sqrt(2*pi)*exp((-z.^2)/2);
 Vs = @(s) phi((log(s)+0.14)/sqrt(0.08))+dn((log(s)+0.14)/sqrt(0.08))/sqrt(0.08)-exp(-0.1)*dn((log(s)+0.06)/sqrt(0.08))/(s*sqrt(0.08));
-%Wx analitica
-Wx_anal = @(x) Vs(2.^x).*2.^x*log(2);
+%VS numérica
+%Wx_anal = @(x) Vs(2.^x).*2.^x*log(2);
 %Calculamos Wx num�rica
 Wx_num(1) = 0;
 for i = 2:M(1/10)
-    Wx_num(i) = (Crank(i+1,tFin)-Crank(i-1,tFin))*5;
+   Wx_num(i) = (Crank(i+1,tFin)-Crank(i-1,tFin))*5;
 end
+
+for i = 2:M(1/10)
+   Vs_anal(i) = (solExact(i+1)-solExact(i-1))*5;
+end
+
+Vs_anal(1)=0;
+Vs_anal(M(1/10)+1) = 2.8;
+
 Wx_num(M(1/10)+1) = 2.8;
+Vs_num = @(Wx,x) Wx./(2.^(x)*log(2));
+Vs_res = Vs_num(Wx_num,gridSpace);
+close all;
+title('Vs vs S')
+plot(gridPrice,Vs_res)
+hold on
+plot(gridPrice,Vs_anal)
+pause();
+
 %pause();
 %close all;
-plot(gridSpace,Wx_anal(gridSpace));
+%plot(gridSpace,Wx_anal(gridSpace));
 hold on
 %plot(gridSpace,Wx_num);
 
